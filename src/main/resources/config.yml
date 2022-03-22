@@ -1,0 +1,35 @@
+# Get client id and secret code - https://dev.twitch.tv/console/apps
+client_id:     ''
+client_secret: ''
+
+# https://twitchapps.com/tmi/ (optional)
+oauth_token: ''
+
+# Webhook for discord notifications (discord: true)
+webhook_url: '' # Edit webhook.json (I advise discohook.org)
+
+# Toggle features
+discord:  false
+duration: true
+follow:   false
+cheer:    false
+sub:      true
+sub_gift: true
+
+# Custom messages
+# How to make colorful text - https://www.digminecraft.com/lists/color_list_pc.php
+stream_up:        '§l§d[TwitchBot]§f %s has gone live: %s'
+stream_down:      '§l§d[TwitchBot]§f %s has stopped streaming.'
+stream_duration:  '§l§d[TwitchBot]§f %s has been streaming for %s.'
+on_follow:        '§l§d[TwitchBot]§f %s just followed!'
+on_cheer:         '§l§d[TwitchBot]§f %s just cheered %d bits!'
+on_sub:           '§l§d[TwitchBot]§f %s just subscribed for %d months!'
+on_sub_gift:      '§l§d[TwitchBot]§f Thank you %s for gifting %d subs to %s ❤'
+
+# Duration alerts settings (duration: false to disable)
+round_to:      30      # Nearest minute for rounding.
+message_delay: 1810000 # Delay between alerts.
+
+# Which channel events you want to announce.
+channels:
+  - bestchannelintheworld

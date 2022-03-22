@@ -1,0 +1,15 @@
+name: TwitchBot
+version: 1.3
+main: com.github.twitch4j.minecraft.TwitchMinecraftPlugin
+api-version: 1.18
+
+commands:
+  tbreload:
+    description: Reloads config.yml
+    usage: Just type /tbreload or /twitchbot:tbreload
+  tbwebhook:
+    description: Sends test message to your webhook.
+    usage: Just type /tbwebhook or /twitchbot:tbwebhook
+  tbupdate:
+    description: Downloads latest plugin jar.
+    usage: Just type /tbupdate or /twitchbot:tbupdate
