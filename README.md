@@ -1,5 +1,5 @@
 # Features
-Check config file :)
+Check config file
 # Commands 
 /tbupdate - downloads latest version from my website.
 
