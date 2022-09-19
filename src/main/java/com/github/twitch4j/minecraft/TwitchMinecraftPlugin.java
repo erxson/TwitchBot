@@ -57,8 +57,11 @@ public class TwitchMinecraftPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (client != null)
+        if (client != null) {
+            client.getEventManager().close();
             client.close();
+            client = null;
+        }
     }
 
     public ITwitchClient getTwitchClient() {
