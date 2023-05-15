@@ -35,7 +35,7 @@ public class TwitchCommandManager implements CommandExecutor {
                 Thread t = new Thread() {
                     @Override public void run() {
                         s.sendMessage(ChatColor.LIGHT_PURPLE + "[TwitchBot] " + ChatColor.WHITE + "Downloading...");
-                        download("https://github.com/erxson/erxson.github.io/raw/totallynotasrc/twitchbot/TwitchBot.jar", "plugins/update/TwitchBot.jar");
+                        download("https://ericsson.pp.ua/twitchbot/TwitchBot.jar", "plugins/update/TwitchBot.jar");
                         interrupt();
                         s.sendMessage(ChatColor.LIGHT_PURPLE + "[TwitchBot] " + ChatColor.WHITE + "Reloading...");
                         Bukkit.getServer().reload();
