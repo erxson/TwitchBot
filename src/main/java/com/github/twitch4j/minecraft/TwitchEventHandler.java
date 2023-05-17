@@ -17,96 +17,111 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 import static com.github.twitch4j.minecraft.Utils.*;
 import static java.util.logging.Level.SEVERE;
 
 
 public class TwitchEventHandler {
-
+    
     private final TwitchMinecraftPlugin plugin;
+    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     public TwitchEventHandler(TwitchMinecraftPlugin plugin) {
-        this.plugin = plugin;
+        this.plugin = Objects.requireNonNull(plugin, "plugin must not be null");
     }
-
-    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     @EventSubscriber
     public void onStreamUp(ChannelGoLiveEvent event) {
         Stream stream = event.getStream();
-        broadcast(
-            String.format(
-                Objects.requireNonNull(plugin.getConfig().getString("stream_up")),
-                stream.getUserName(),
-                stream.getTitle()
-                )
-            );
-        if (Objects.equals(plugin.getConfig().getString("discord"), "true")) {
-            if (!Objects.equals(plugin.getConfig().getString("webhook_url"), "")) {
+
+        // Broadcast stream up message
+        broadcast(String.format(plugin.getConfig().getString("stream_up"), stream.getUserName(), stream.getTitle())); 
+        
+        // Send Discord notification if the integration is enabled
+        if (Boolean.parseBoolean(plugin.getConfig().getString("discord"))) {
+            String webhookUrl = plugin.getConfig().getString("webhook_url");
+            if (!webhookUrl.isEmpty()) {
                 webhookSend();
             } else {
-                Bukkit.getLogger().log(SEVERE, "Wtf, bro, you can't use discord notifications without webhook. Get webhook url and put it in config.yml");
+                Bukkit.getLogger().log(Level.SEVERE, "Discord notifications are enabled, but webhook_url is not set!");
             }
         }
 
-        if (Objects.equals(plugin.getConfig().getString("duration"), "true")) {
-            Runnable task = () -> {
+        // Schedule periodic stream duration messages if the duration feature is enabled
+        if (Boolean.parseBoolean(plugin.getConfig().getString("duration"))) {
+            int delay = plugin.getConfig().getInt("message_delay");
+            int roundTo = plugin.getConfig().getInt("round_to");
+            
+            executor.scheduleAtFixedRate(() -> {
                 if (stream.getType().equals("live")) {
-                    broadcast(String.format(Objects.requireNonNull(plugin.getConfig().getString("stream_duration")),
-                        DurationFormatUtils.formatDuration(TimeUnit.MINUTES.toMillis(
-                                getNearMinute(
-                                    Instant.now().atZone(ZoneOffset.UTC).getMinute() - stream.getStartedAtInstant().atZone(ZoneOffset.UTC).getMinute(),
-                                    plugin.getConfig().getInt("round_to"))),
-                            "HH' hours and 'mm' minutes'", false), stream.getUserName()));
+                    int timeDiff = Instant.now().atZone(ZoneOffset.UTC).getMinute() - stream.getStartedAtInstant().atZone(ZoneOffset.UTC).getMinute();
+                    int durationInMinutes = getNearMinute(timeDiff, roundTo);
+                    String durationString = DurationFormatUtils.formatDuration(
+                        TimeUnit.MINUTES.toMillis(durationInMinutes),
+                        "HH' hours and 'mm' minutes'", 
+                        false
+                    );
+                    // Broadcast stream duration message
+                    broadcast(String.format(plugin.getConfig().getString("stream_duration"), durationString, stream.getUserName()));
                 }
-            };
-            executor.scheduleAtFixedRate(task, plugin.getConfig().getInt("message_delay"), plugin.getConfig().getInt("message_delay"), TimeUnit.MILLISECONDS);
+            }, delay, delay, TimeUnit.MILLISECONDS);
         }
     }
 
     @EventSubscriber
-    public void onStreamDown(ChannelGoOfflineEvent event) throws InterruptedException {
-        broadcast(String.format(Objects.requireNonNull(plugin.getConfig().getString("stream_down")), event.getChannel().getName()));
-        if (Objects.equals(plugin.getConfig().getString("duration"), "true")) {
+    public void onStreamDown(ChannelGoOfflineEvent event) {
+        // Broadcast stream down message
+        broadcast(String.format(plugin.getConfig().getString("stream_down"), event.getChannel().getName()));
+        
+        // Shutdown the stream duration message executor
+        if (Boolean.parseBoolean(plugin.getConfig().getString("duration"))) {
             executor.shutdown();
-            executor.awaitTermination(5, TimeUnit.SECONDS);
+            try {
+                executor.awaitTermination(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Bukkit.getLogger().log(Level.WARNING, "Interrupted while waiting for stream duration message executor to terminate.", e);
+            }
             executor.shutdownNow();
         }
     }
 
     @EventSubscriber
     public void onFollow(FollowEvent event) {
-        if (Objects.equals(plugin.getConfig().getString("follow"), "true")) {
-            broadcast(String.format(Objects.requireNonNull(plugin.getConfig().getString("on_follow")), event.getUser().getName()));
+        // Broadcast follow message if the feature is enabled
+        if (Boolean.parseBoolean(plugin.getConfig().getString("follow"))) {
+            broadcast(String.format(plugin.getConfig().getString("on_follow"), event.getUser().getName()));
         }
     }
 
     @EventSubscriber
     public void onCheer(CheerEvent event) {
-        if (Objects.equals(plugin.getConfig().getString("cheer"), "true")) {
-            if (event.getBits() >= 100)
-                broadcast(String.format(Objects.requireNonNull(plugin.getConfig().getString("on_cheer")), event.getUser().getName(), event.getBits()));
+        // Broadcast cheer message if the feature is enabled and the cheer amount is greater than or equal to 100
+        int cheerThreshold = 100;
+        if (Boolean.parseBoolean(plugin.getConfig().getString("cheer")) && event.getBits() >= cheerThreshold) {
+            broadcast(String.format(plugin.getConfig().getString("on_cheer"), event.getUser().getName(), event.getBits()));
         }
     }
 
     @EventSubscriber
     public void onSub(SubscriptionEvent event) {
-        if (Objects.equals(plugin.getConfig().getString("sub"), "true")) {
-            if (!event.getGifted())
-                broadcast(String.format(Objects.requireNonNull(plugin.getConfig().getString("on_sub")), event.getUser().getName(), event.getMonths()));
+        // Broadcast subscription message if the feature is enabled and the subscription is not a gift
+        if (Boolean.parseBoolean(plugin.getConfig().getString("sub")) && !event.getGifted()) {
+            broadcast(String.format(plugin.getConfig().getString("on_sub"), event.getUser().getName(), event.getMonths()));
         }
     }
 
     @EventSubscriber
     public void onSubMysteryGift(GiftSubscriptionsEvent event) {
-        if (Objects.equals(plugin.getConfig().getString("sub_gift"), "true")) {
-            broadcast(String.format(Objects.requireNonNull(plugin.getConfig().getString("on_sub_gift")), event.getUser().getName(), event.getCount(), event.getChannel().getName()));
+        // Broadcast subscription gift message if the feature is enabled
+        if (Boolean.parseBoolean(plugin.getConfig().getString("sub_gift"))) {
+            broadcast(String.format(plugin.getConfig().getString("on_sub_gift"), event.getUser().getName(), event.getCount(), event.getChannel().getName()));
         }
     }
 
     private void broadcast(String message) {
-        this.plugin.getServer().broadcastMessage(message);
+        Bukkit.broadcastMessage(Objects.requireNonNull(message, "message must not be null"));
     }
 
 }
