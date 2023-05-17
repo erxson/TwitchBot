@@ -6,45 +6,53 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
+
 import java.io.File;
+
 import static com.github.twitch4j.minecraft.Utils.download;
 import static com.github.twitch4j.minecraft.Utils.webhookSend;
 
 public class TwitchCommandManager implements CommandExecutor {
     private final Plugin plugin = TwitchMinecraftPlugin.getPlugin(TwitchMinecraftPlugin.class);
+    private final String PLUGIN_NAME = "TwitchBot";
 
-    public boolean onCommand(CommandSender s, Command cmd, String label, String[] args) {
-        if (s.hasPermission("tb.*") || s.getName().equals("ericsson_")) {
-            if (cmd.getName().equalsIgnoreCase("tbreload")) {
-                this.plugin.reloadConfig();
-                s.sendMessage(ChatColor.LIGHT_PURPLE + "[TwitchBot] " + ChatColor.WHITE + "Config reloaded.");
-            }
-            if (cmd.getName().equalsIgnoreCase("tbwebhook")) {
-                Thread t = new Thread() {
-                    @Override public void run() {
-                        webhookSend();
-                        interrupt();
-                        s.sendMessage(ChatColor.LIGHT_PURPLE + "[TwitchBot] " + ChatColor.WHITE + "Sent test message.");
-                    }
-                };
-                t.start();
-            }
-            if (cmd.getName().equalsIgnoreCase("tbupdate")) {
-                File folder = new File("plugins/update");
-                if (!folder.exists()) folder.mkdir();
-                Thread t = new Thread() {
-                    @Override public void run() {
-                        s.sendMessage(ChatColor.LIGHT_PURPLE + "[TwitchBot] " + ChatColor.WHITE + "Downloading...");
-                        download("https://ericsson.pp.ua/twitchbot/TwitchBot.jar", "plugins/update/TwitchBot.jar");
-                        interrupt();
-                        s.sendMessage(ChatColor.LIGHT_PURPLE + "[TwitchBot] " + ChatColor.WHITE + "Reloading...");
-                        Bukkit.getServer().reload();
-                        s.sendMessage(ChatColor.LIGHT_PURPLE + "[TwitchBot] " + ChatColor.WHITE + "Plugin updated.");
-                    }
-                };
-                t.start();
-            }
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (!(sender.hasPermission("tb.*") || sender.getName().equals("ericsson_"))) {
+            return true;
         }
+
+        switch (cmd.getName().toLowerCase()) {
+            case "tbreload":
+                plugin.reloadConfig();
+                sender.sendMessage(ChatColor.LIGHT_PURPLE + "[" + PLUGIN_NAME + "] " + ChatColor.WHITE + "Config reloaded.");
+                break;
+            case "tbwebhook":
+                Thread webhookThread = new Thread(() -> {
+                    webhookSend();
+                    Thread.currentThread().interrupt();
+                    sender.sendMessage(ChatColor.LIGHT_PURPLE + "[" + PLUGIN_NAME + "] " + ChatColor.WHITE + "Sent test message.");
+                });
+                webhookThread.start();
+                break;
+            case "tbupdate":
+                File updateFolder = new File("plugins/update");
+                if (!updateFolder.exists()) {
+                    updateFolder.mkdir();
+                }
+                Thread updateThread = new Thread(() -> {
+                    sender.sendMessage(ChatColor.LIGHT_PURPLE + "[" + PLUGIN_NAME + "] " + ChatColor.WHITE + "Downloading...");
+                    download("https://ericsson.pp.ua/twitchbot/TwitchBot.jar", "plugins/update/TwitchBot.jar");
+                    Thread.currentThread().interrupt();
+                    sender.sendMessage(ChatColor.LIGHT_PURPLE + "[" + PLUGIN_NAME + "] " + ChatColor.WHITE + "Reloading...");
+                    Bukkit.getServer().reload();
+                    sender.sendMessage(ChatColor.LIGHT_PURPLE + "[" + PLUGIN_NAME + "] " + ChatColor.WHITE + "Plugin updated.");
+                });
+                updateThread.start();
+                break;
+            default:
+                break;
+        }
+
         return true;
     }
-}
+} 
