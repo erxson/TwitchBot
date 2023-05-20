@@ -56,6 +56,7 @@ public class TwitchMinecraftPlugin extends JavaPlugin {
                 .withChatAccount(credential)
                 .withEnableHelix(true)
                 .withDefaultAuthToken(credential)
+                .withChatCommandsViaHelix(false)
                 .build();
         List<String> channels = config.getStringList("channels");
         if (!channels.isEmpty()) {
