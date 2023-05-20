@@ -13,7 +13,7 @@ repositories {
 }
 dependencies {
 	compileOnly 'io.papermc.paper:paper-api:1.19-R0.1-SNAPSHOT'
-	implementation 'com.github.twitch4j:twitch4j:1.12.0'
+	implementation 'com.github.twitch4j:twitch4j:1.14.0'
 }
 processResources {
 	from(sourceSets.main.resources.srcDirs) {
