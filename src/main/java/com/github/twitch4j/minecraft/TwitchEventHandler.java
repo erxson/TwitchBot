@@ -11,6 +11,7 @@ import com.github.twitch4j.helix.domain.Stream;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Objects;
@@ -56,18 +57,35 @@ public class TwitchEventHandler {
 
         // Schedule periodic stream duration messages if the duration feature is enabled
         if (Boolean.parseBoolean(plugin.getConfig().getString("duration"))) {
-            int delay = plugin.getConfig().getInt("message_delay");
+            int delay = plugin.getConfig().getInt("message_delay") * 1000;
             int roundTo = plugin.getConfig().getInt("round_to");
 
             executor.scheduleAtFixedRate(() -> {
                 if (stream.getType().equals("live")) {
-                    int timeDiff = Instant.now().atZone(ZoneOffset.UTC).getMinute() - stream.getStartedAtInstant().atZone(ZoneOffset.UTC).getMinute();
+                    /*int now = Instant.now().atZone(ZoneOffset.UTC).getMinute();
+                    int start = stream.getStartedAtInstant().atZone(ZoneOffset.UTC).getMinute();
+                    int timeDiff = now - start;
                     int durationInMinutes = getNearMinute(timeDiff, roundTo);
                     String durationString = DurationFormatUtils.formatDuration(
                         TimeUnit.MINUTES.toMillis(durationInMinutes),
                         "HH' hours and 'mm' minutes'",
                         false
-                    );
+                    );*/
+                    Instant now = Instant.now();
+                    Instant startedAt = stream.getStartedAtInstant();
+                    Duration duration = Duration.between(startedAt, now);
+                    long durationInMinutes = duration.toMinutes();
+                    long durationInHours = durationInMinutes / 60;
+                    long remainingMinutes = durationInMinutes % 60;
+                    String durationString;
+                    if (remainingMinutes == 0) {
+                        durationString = String.format("%d hours", durationInHours);
+                    } else {
+                        long roundedMinutes = getNearMinute((int) remainingMinutes, roundTo);
+                        durationString = String.format("%d hours and %d minutes", durationInHours, roundedMinutes);
+                    }
+
+
                     // Broadcast stream duration message
                     // broadcast(String.format(plugin.getConfig().getString("stream_duration"), durationString, stream.getUserName()));
 
