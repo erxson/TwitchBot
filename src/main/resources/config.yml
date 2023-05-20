@@ -10,15 +10,16 @@ webhook_url: '' # Edit webhook.json (I advise discohook.org)
 
 # Toggle features
 discord:      false
-duration:     true
+duration:     false # unstable
 follow:       false
-cheer:        false
+cheer:        true
 sub:          true
 sub_gift:     true
 sub_mystery:  true
 
 # Custom messages
-# How to make colorful text - https://www.digminecraft.com/lists/color_list_pc.php
+# How to make colorful text       - https://www.digminecraft.com/lists/color_list_pc.php
+# How to make cool colorful text  - https://jtvjan.nl/tools/rainbowtext.html
 
 # Possible placeholders
 # stream_up:        {streamer}, {game}, {title}
@@ -41,7 +42,7 @@ on_sub_mystery:   '§l§d[TwitchBot]§f Thank you {gifter} for gifting {subs_gif
 
 # Duration alerts settings (duration: false to disable)
 round_to:      30      # Nearest minute for rounding.
-message_delay: 1810000 # Delay between alerts.
+message_delay: 1805    # Delay between alerts in seconds.
 
 # Which channel events you want to announce.
 channels:
