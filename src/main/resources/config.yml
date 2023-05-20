@@ -9,22 +9,35 @@ oauth_token: ''
 webhook_url: '' # Edit webhook.json (I advise discohook.org)
 
 # Toggle features
-discord:  false
-duration: true
-follow:   false
-cheer:    false
-sub:      true
-sub_gift: true
+discord:      false
+duration:     true
+follow:       false
+cheer:        false
+sub:          true
+sub_gift:     true
+sub_mystery:  true
 
 # Custom messages
 # How to make colorful text - https://www.digminecraft.com/lists/color_list_pc.php
-stream_up:        '§l§d[TwitchBot]§f %s has gone live: %s'
-stream_down:      '§l§d[TwitchBot]§f %s has stopped streaming.'
-stream_duration:  '§l§d[TwitchBot]§f %s has been streaming for %s.'
-on_follow:        '§l§d[TwitchBot]§f %s just followed!'
-on_cheer:         '§l§d[TwitchBot]§f %s just cheered %d bits!'
-on_sub:           '§l§d[TwitchBot]§f %s just subscribed for %d months!'
-on_sub_gift:      '§l§d[TwitchBot]§f Thank you %s for gifting %d subs to %s ❤'
+
+# Possible placeholders
+# stream_up:        {streamer}, {game}, {title}
+# stream_down:      {streamer}
+# stream_duration:  {streamer}, {game}, {title}, {duration}
+# on_follow:        {streamer}, {user}
+# on_cheer:         {streamer}, {user}, {bits}, {message}, {sub_months}, {sub_tier}
+# on_sub:           {streamer}, {user}, {sub_plan}, {months}, {sub_streak}
+# on_sub_gift:      {streamer}, {user}, {gifted}, {sub_plan}, {gift_months}, {months}, {sub_streak}
+# on_sub_mystery:   {streamer}, {user}, {sub_plan}, {subs_gifted}, {subs_gifted_total}
+
+stream_up:        '§l§d[TwitchBot]§f {streamer} has gone live: {title}'
+stream_down:      '§l§d[TwitchBot]§f {streamer} has stopped streaming.'
+stream_duration:  '§l§d[TwitchBot]§f {streamer} has been streaming for %s.'
+on_follow:        '§l§d[TwitchBot]§f {user} just followed!'
+on_cheer:         '§l§d[TwitchBot]§f {user} just cheered {bits} bits!'
+on_sub:           '§l§d[TwitchBot]§f {user} just subscribed for {months} months!'
+on_sub_gift:      '§l§d[TwitchBot]§f Thank you {user} for gifting {subs_gifted} subs to {gifted} ❤'
+on_sub_mystery:   '§l§d[TwitchBot]§f Thank you {gifter} for gifting {subs_gifted} subs ❤'
 
 # Duration alerts settings (duration: false to disable)
 round_to:      30      # Nearest minute for rounding.
