@@ -31,7 +31,7 @@ public class Utils {
 
     public static int getNearMinute(int minutes, int value) {
         int mod = minutes % value;
-        return mod >= value / 2 ? minutes + (value - mod) : minutes - mod;
+        return mod > value / 2 ? minutes + (value - mod) : minutes - mod;
     }
 
     public static void download(String link, String file) {
