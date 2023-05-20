@@ -1,29 +1,35 @@
 import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
-	id 'java'
+    id 'java'
 }
+
 group = 'com.github.twitch4j'
 sourceCompatibility = '17'
 targetCompatibility = '17'
+
 repositories {
-	mavenCentral()
-	maven {
-		url = uri('https://papermc.io/repo/repository/maven-public/')
-	}
+    mavenCentral()
+    maven {
+        url = uri('https://papermc.io/repo/repository/maven-public/')
+    }
 }
+
 dependencies {
-	compileOnly 'io.papermc.paper:paper-api:1.19-R0.1-SNAPSHOT'
-	implementation 'com.github.twitch4j:twitch4j:1.14.0'
+    compileOnly 'io.papermc.paper:paper-api:1.19-R0.1-SNAPSHOT'
+    implementation 'com.github.twitch4j:twitch4j:+'
 }
+
 processResources {
-	from(sourceSets.main.resources.srcDirs) {
-		duplicatesStrategy DuplicatesStrategy.INCLUDE
-		filter ReplaceTokens, tokens: [version: version]
-	}
+    from(sourceSets.main.resources.srcDirs) {
+        duplicatesStrategy DuplicatesStrategy.INCLUDE
+        filter ReplaceTokens, tokens: [version: version]
+    }
 }
+
 jar {
-	from {
-		duplicatesStrategy DuplicatesStrategy.INCLUDE // primarily META-INF duplicates
-		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-	}
+    from {
+        duplicatesStrategy DuplicatesStrategy.INCLUDE
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
