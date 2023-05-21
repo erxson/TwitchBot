@@ -71,6 +71,9 @@ public class TwitchEventHandler {
                         "HH' hours and 'mm' minutes'",
                         false
                     );*/
+
+                    String stream_duration = plugin.getConfig().getString("stream_duration");
+
                     Instant now = Instant.now();
                     Instant startedAt = stream.getStartedAtInstant();
                     Duration duration = Duration.between(startedAt, now);
@@ -89,7 +92,7 @@ public class TwitchEventHandler {
                     // Broadcast stream duration message
                     // broadcast(String.format(plugin.getConfig().getString("stream_duration"), durationString, stream.getUserName()));
 
-                    broadcast(stream_up
+                    broadcast(stream_duration
                             .replace("{streamer}", stream.getUserName())
                             .replace("{game}", stream.getGameName())
                             .replace("{title}", stream.getTitle())
