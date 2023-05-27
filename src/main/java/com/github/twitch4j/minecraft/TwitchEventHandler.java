@@ -26,7 +26,7 @@ import static com.github.twitch4j.minecraft.Utils.*;
 public class TwitchEventHandler {
 
     private final TwitchMinecraftPlugin plugin;
-    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    //private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     public TwitchEventHandler(TwitchMinecraftPlugin plugin) {
         this.plugin = Objects.requireNonNull(plugin, "plugin must not be null");
@@ -56,21 +56,12 @@ public class TwitchEventHandler {
         }
 
         // Schedule periodic stream duration messages if the duration feature is enabled
-        if (Boolean.parseBoolean(plugin.getConfig().getString("duration"))) {
+        /*if (Boolean.parseBoolean(plugin.getConfig().getString("duration"))) {
             int delay = plugin.getConfig().getInt("message_delay") * 1000;
             int roundTo = plugin.getConfig().getInt("round_to");
 
             executor.scheduleAtFixedRate(() -> {
                 if (stream.getType().equals("live")) {
-                    /*int now = Instant.now().atZone(ZoneOffset.UTC).getMinute();
-                    int start = stream.getStartedAtInstant().atZone(ZoneOffset.UTC).getMinute();
-                    int timeDiff = now - start;
-                    int durationInMinutes = getNearMinute(timeDiff, roundTo);
-                    String durationString = DurationFormatUtils.formatDuration(
-                        TimeUnit.MINUTES.toMillis(durationInMinutes),
-                        "HH' hours and 'mm' minutes'",
-                        false
-                    );*/
 
                     String stream_duration = plugin.getConfig().getString("stream_duration");
 
@@ -100,7 +91,7 @@ public class TwitchEventHandler {
                     );
                 }
             }, delay, delay, TimeUnit.MILLISECONDS);
-        }
+        }*/
     }
 
     @EventSubscriber
@@ -114,7 +105,7 @@ public class TwitchEventHandler {
         );
 
         // Shutdown the stream duration message executor
-        if (Boolean.parseBoolean(plugin.getConfig().getString("duration"))) {
+        /*if (Boolean.parseBoolean(plugin.getConfig().getString("duration"))) {
             executor.shutdown();
             try {
                 executor.awaitTermination(5, TimeUnit.SECONDS);
@@ -122,7 +113,7 @@ public class TwitchEventHandler {
                 Bukkit.getLogger().log(Level.WARNING, "Interrupted while waiting for stream duration message executor to terminate.", e);
             }
             executor.shutdownNow();
-        }
+        }*/
     }
 
     @EventSubscriber
