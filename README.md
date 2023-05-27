@@ -1,4 +1,5 @@
-<h1>TwitchBot [EN](./README.md) | [RU](./README-ru.md)</h1>
+# TwitchBot
+[![RU](https://img.shields.io/badge/lang-ru-blue.svg)](https://github.com/erxson/TwitchBot/blob/master/README.ru.md)
 
 <p>TwitchBot - awesome plugin for Minecraft</p>
 
