@@ -17,7 +17,7 @@ public class TwitchCommandManager implements CommandExecutor {
     private final String PLUGIN_NAME = "TwitchBot";
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender.hasPermission("tb.*") || sender.getName().equals("ericsson_"))) {
+        if (!(sender.hasPermission("tb.*"))) {
             return true;
         }
 
