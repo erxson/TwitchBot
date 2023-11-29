@@ -13,7 +13,7 @@
     <img src="assets/support.png" alt="developer support"></li>
   <li>ПРЕКРАСНАЯ ОПТИМИЗАЦИЯ!<br>
     <img src="assets/optimization.png" alt="optimization"></li>
-  <li>СТАБИЛЬНАЯ РОБОТА<br>
+  <li>СТАБИЛЬНАЯ РАБОТА<br>
     <img src="assets/feedback.png" alt="feedback"></li>
 </ol>
 
